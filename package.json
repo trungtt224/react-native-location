@@ -1,11 +1,11 @@
 {
-  "name": "react-native-location",
+  "name": "react-native-vlocation",
   "description": "Native GPS location support for React Native",
   "author": "React Native Community",
   "version": "2.5.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/timfpark/react-native-location.git"
+    "url": "https://github.com/trungtt224/react-native-location.git"
   },
   "license": "MIT",
   "keywords": [

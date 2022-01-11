@@ -46,7 +46,7 @@ RCT_EXPORT_MODULE()
     [self stopMonitoringSignificantLocationChanges];
     [self stopUpdatingLocation];
     [self stopUpdatingHeading];
-    
+
     self.locationManager = nil;
 }
 
@@ -91,7 +91,7 @@ RCT_REMAP_METHOD(requestWhenInUseAuthorization,
 {
     // Get the current status
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-    
+
     if (status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) {
         // We already have the correct status so resolve with true
         resolve(@(YES));
@@ -133,13 +133,13 @@ RCT_EXPORT_METHOD(configure:(NSDictionary *)options)
             self.locationManager.activityType = CLActivityTypeAirborne;
         }
     }
-    
+
     // Allows background location updates
     NSNumber *allowsBackgroundLocationUpdates = [RCTConvert NSNumber:options[@"allowsBackgroundLocationUpdates"]];
     if (allowsBackgroundLocationUpdates != nil) {
         self.locationManager.allowsBackgroundLocationUpdates = [allowsBackgroundLocationUpdates boolValue];
     }
-    
+
     // Desired accuracy
     NSDictionary *desiredAccuracy = [RCTConvert NSDictionary:options[@"desiredAccuracy"]];
     if (desiredAccuracy != nil) {
@@ -156,20 +156,20 @@ RCT_EXPORT_METHOD(configure:(NSDictionary *)options)
             self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         }
     }
-    
+
     // Distance filter
     NSNumber *distanceFilter = [RCTConvert NSNumber:options[@"distanceFilter"]];
     if (distanceFilter != nil) {
         self.locationManager.distanceFilter = [distanceFilter doubleValue];
     }
-    
+
     // Heading filter
     NSNumber *headingFilter = [RCTConvert NSNumber:options[@"headingFilter"]];
     if (headingFilter != nil) {
         double headingFilterValue = [headingFilter doubleValue];
         self.locationManager.headingFilter = headingFilterValue == 0 ? kCLHeadingFilterNone : headingFilterValue;
     }
-    
+
     // Heading orientation
     NSString *headingOrientation = [RCTConvert NSString:options[@"headingOrientation"]];
     if ([headingOrientation isEqualToString:@"portrait"]) {
@@ -181,13 +181,13 @@ RCT_EXPORT_METHOD(configure:(NSDictionary *)options)
     } else if ([headingOrientation isEqualToString:@"landscapeRight"]) {
         self.locationManager.headingOrientation = CLDeviceOrientationLandscapeRight;
     }
-    
+
     // Pauses location updates automatically
     NSNumber *pausesLocationUpdatesAutomatically = [RCTConvert NSNumber:options[@"pausesLocationUpdatesAutomatically"]];
     if (pausesLocationUpdatesAutomatically != nil) {
         self.locationManager.pausesLocationUpdatesAutomatically = [pausesLocationUpdatesAutomatically boolValue];
     }
-    
+
     // Shows background location indicator
     if (@available(iOS 11.0, *)) {
         NSNumber *showsBackgroundLocationIndicator = [RCTConvert NSNumber:options[@"showsBackgroundLocationIndicator"]];
@@ -238,13 +238,13 @@ RCT_EXPORT_METHOD(stopUpdatingHeading)
         self.alwaysPermissionResolver(@(status == kCLAuthorizationStatusAuthorizedAlways));
         self.alwaysPermissionResolver = nil;
     }
-    
+
     // Handle the when in use permission resolver
     if (self.whenInUsePermissionResolver != nil) {
         self.whenInUsePermissionResolver(@(status == kCLAuthorizationStatusAuthorizedWhenInUse));
         self.whenInUsePermissionResolver = nil;
     }
-    
+
     // Handle the event listener
     if (self.hasListeners) {
         NSString *statusName = [self nameForAuthorizationStatus:status];
@@ -263,7 +263,7 @@ RCT_EXPORT_METHOD(stopUpdatingHeading)
     if (newHeading.headingAccuracy < 0) {
         return;
     }
-    
+
     if (!self.hasListeners) {
         return;
     }
@@ -284,7 +284,7 @@ RCT_EXPORT_METHOD(stopUpdatingHeading)
     if (!self.hasListeners) {
         return;
     }
-    
+
     NSMutableArray *results = [NSMutableArray arrayWithCapacity:[locations count]];
     [locations enumerateObjectsUsingBlock:^(CLLocation *location, NSUInteger idx, BOOL *stop) {
         [results addObject:@{
@@ -295,11 +295,12 @@ RCT_EXPORT_METHOD(stopUpdatingHeading)
                              @"altitudeAccuracy": @(location.verticalAccuracy),
                              @"course": @(location.course),
                              @"speed": @(location.speed),
+                             @"speedAccuracy": @(location.speedAccuracy),
                              @"floor": @(location.floor.level),
                              @"timestamp": @([location.timestamp timeIntervalSince1970] * 1000) // in ms
                              }];
     }];
-    
+
 
     [self sendEventWithName:@"locationUpdated" body:results];
 }
